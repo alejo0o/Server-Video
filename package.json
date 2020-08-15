@@ -12,6 +12,7 @@
   "author": "Alejandro Vivanco y Thalia Zapata",
   "license": "ISC",
   "dependencies": {
+    "@fortawesome/free-regular-svg-icons": "^5.14.0",
     "@tensorflow-models/coco-ssd": "0.1.1",
     "@tensorflow/tfjs": "0.14.0",
     "nprogress": "0.2.0",

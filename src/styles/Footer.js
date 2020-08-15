@@ -1,4 +1,5 @@
 /* eslint-disable import/prefer-default-export */
+
 import styled from 'styled-components';
 
 export const Footer = styled.div`
@@ -29,7 +30,7 @@ export const FirstContainer = styled.div`
   padding: 2% 5%;
   a {
     color: black;
-    font-weight: 500;
+    font-weight: 550;
   }
 `;
 export const SecondContainer = styled.div`
@@ -47,5 +48,7 @@ export const IconContainer = styled.div`
   a {
     margin: 0% 1em;
     color: black;
+    text-decoration: none;
+    font-size: large;
   }
 `;
