@@ -12,16 +12,26 @@ export const Principal = styled.div`
   }
 `;
 export const Icon = styled.div`
-  margin: 1.5em 6.5em;
+  padding-left: 6em;
   animation: animacion 0.4s 3;
-  p{
-      padding-left: 1em;
+  font-size: large;
+  .ic{
+    margin-right: 1em;
   }
   a {
     text-decoration: none;
-    display: flex;
+    margin-right: 1em;
+  
   }
+  @media only screen and (max-width: 500px) {
+    display: block;
+    height: 35%;
+    padding-left: 1em;
+}
   @media only screen and (max-width: 768px) {
+    display: block;
+    height: 40%;
+    padding-left: 1em;
     a {
         margin: 0.5em 3em;
         font-size: 1em;
@@ -29,10 +39,10 @@ export const Icon = styled.div`
 `;
 
 export const Global = styled.div`
-  width: 40%;
+  width: 30%;
 
   h1 {
-    margin: 1.5em 3em;
+    margin: 1.5em 3.5em;
     font-weight: 700;
     font-size: 1.8em;
   }
@@ -66,7 +76,7 @@ export const Description = styled.div`
   margin: 1.5em 3em;
   background-color: #77ddf9;
   height: 100%;
-  width: 50%;
+  width: 40%;
   overflow: auto;
   p {
     margin: 1.5em 1.5em;

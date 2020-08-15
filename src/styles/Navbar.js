@@ -1,4 +1,5 @@
 /* eslint-disable import/prefer-default-export */
+
 import styled from 'styled-components';
 
 export const NavBar = styled.div`
@@ -17,6 +18,7 @@ export const NavBar = styled.div`
     }
   }
   .logo {
+    padding: 0.4% 4%;
     animation-name: anim;
     animation-duration: 8s;
     animation-iteration-count: infinite;
@@ -31,21 +33,21 @@ export const NavBar = styled.div`
     box-shadow: 0 15px 10px -10px rgba(0, 0, 0, 0.2),
       0 1px 4px rgba(0, 0, 0, 0.2), 0 0 40px rgba(0, 0, 0, 0.1) inset;
   }
+  #basic-nav-dropdown,
+  #navbar-titles {
+    color: black;
+  }
   .items {
     font-family: 'VremenaGroteskRegular', sans-serif;
     font-weight: 640;
     margin: auto;
   }
-  .opcion {
+  .option {
     font-size: 1em;
-    color: black;
     margin: 0em 3em;
   }
-  .option.active {
-    border-bottom: 3px solid black;
-  }
   @media only screen and (max-width: 768px) {
-    .opcion {
+    .option {
       margin: unset;
     }
     .dd-item {
