@@ -1,10 +1,20 @@
-import React, { Component } from 'react';
-import * as cocoSsd from '@tensorflow-models/coco-ssd';
 import '@tensorflow/tfjs';
-import { CocoDiv, Main, Video, Canvas } from '../styles/CocoContainer';
-import Nprogress from 'nprogress';
 import '../styles/spinner.css';
 
+import * as cocoSsd from '@tensorflow-models/coco-ssd';
+
+import { Canvas, CocoDiv, Main, Video } from '../styles/CocoContainer';
+import React, { Component } from 'react';
+
+import AnyChart from 'anychart-react';
+import Nprogress from 'nprogress';
+import anychart from 'anychart';
+
+var msftDataTable = anychart.data.table();
+msftDataTable.addData(window.get_msft_daily_short_data());
+var chart = anychart.stock();
+var firstPlot = chart.plot(0);
+firstPlot.area(msftDataTable.mapAs({ value: 4 })).name('MSFT');
 class Coco extends Component {
   videoRef = React.createRef();
   canvasRef = React.createRef();
@@ -49,13 +59,23 @@ class Coco extends Component {
   detectFrame = (video, model) => {
     model.detect(video).then((predictions) => {
       this.renderPredictions(predictions);
+      // this.detectFrameGrap(predictions);
       requestAnimationFrame(() => {
         this.detectFrame(video, model);
       });
     });
   };
+  // detectFrameGrap = (predictions) => {
+  //   const pred = [];
+  //   predictions.forEach((prediction) => {
+  //     if (!pred.includes(predictions)) pred.push(prediction);
+  //   });
+  //   console.log('predicciones', { pred });
+  //   return pred;
+  // };
 
   renderPredictions = (predictions) => {
+    console.log(predictions);
     const ctx = this.canvasRef.current.getContext('2d');
     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
     // Font options.
@@ -90,9 +110,10 @@ class Coco extends Component {
     return (
       <CocoDiv>
         <div
-          id='lds-ring'
+          id="lds-ring"
           ref={this.loaderRed}
-          style={{ visibility: 'hidden' }}>
+          style={{ visibility: 'hidden' }}
+        >
           <div></div>
           <div></div>
           <div></div>
@@ -100,23 +121,34 @@ class Coco extends Component {
         </div>
         <Main>
           <Video
-            id='video'
+            id="video"
             autoPlay
             playsInline
             muted
             ref={this.videoRef}
-            width='600'
-            height='500'
+            width="600"
+            height="500"
             style={{ visibility: 'hidden' }}
           />
           <Canvas
-            id='canvas'
+            id="canvas"
             ref={this.canvasRef}
-            width='600'
-            height='500'
+            width="600"
+            height="500"
             style={{ visibility: 'hidden' }}
           />
         </Main>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <AnyChart
+          width={800}
+          height={600}
+          instance={chart}
+          title="Stock demo"
+        />
       </CocoDiv>
     );
   }
