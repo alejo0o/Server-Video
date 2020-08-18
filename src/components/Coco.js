@@ -76,24 +76,78 @@ class Coco extends Component {
         ' ' +
         [d.getHours(), d.getMinutes(), d.getSeconds()].join(':');
     predictions.forEach((prediction) => {
+      var series;
       var mappingPerson = this.state.table.mapAs({ x: 'x', value: 'person' });
       if (prediction.class === 'person' && prediction.score !== 'undefined') {
         this.state.table.addData([
           { x: dformat.toString(), person: prediction.score },
         ]);
-        var series = this.state.chart.plot(0).line(mappingPerson);
+        series = this.state.chart.plot(0).line(mappingPerson);
         series.name('Person');
         this.state.chart.draw();
       } else if (
-        prediction.class === 'bed' &&
+        prediction.class === 'bicycle' &&
         prediction.score !== 'undefined'
       ) {
-        var mappingBed = this.state.table.mapAs({ x: 'x', value: 'bed' });
+        var mappingBicycle = this.state.table.mapAs({
+          x: 'x',
+          value: 'bicycle',
+        });
         this.state.table.addData([
-          { x: dformat.toString(), bed: prediction.score },
+          { x: dformat.toString(), bicycle: prediction.score },
         ]);
-        var series = this.state.chart.plot(1).line(mappingBed);
-        series.name('Bed');
+        series = this.state.chart.plot(1).line(mappingBicycle);
+        series.name('Bicycle');
+        this.state.chart.draw();
+      } else if (
+        prediction.class === 'car' &&
+        prediction.score !== 'undefined'
+      ) {
+        var mappingCar = this.state.table.mapAs({ x: 'x', value: 'car' });
+        this.state.table.addData([
+          { x: dformat.toString(), car: prediction.score },
+        ]);
+        series = this.state.chart.plot(2).line(mappingCar);
+        series.name('Car');
+        this.state.chart.draw();
+      } else if (
+        prediction.class === 'motorcycle' &&
+        prediction.score !== 'undefined'
+      ) {
+        var mappingMotorcycle = this.state.table.mapAs({
+          x: 'x',
+          value: 'motorcycle',
+        });
+        this.state.table.addData([
+          { x: dformat.toString(), motorcycle: prediction.score },
+        ]);
+        series = this.state.chart.plot(3).line(mappingMotorcycle);
+        series.name('Motorcycle');
+        this.state.chart.draw();
+      } else if (
+        prediction.class === 'airplane' &&
+        prediction.score !== 'undefined'
+      ) {
+        var mappingAirplane = this.state.table.mapAs({
+          x: 'x',
+          value: 'airplane',
+        });
+        this.state.table.addData([
+          { x: dformat.toString(), airplane: prediction.score },
+        ]);
+        series = this.state.chart.plot(4).line(mappingAirplane);
+        series.name('Airplane');
+        this.state.chart.draw();
+      } else if (
+        prediction.class === 'bus' &&
+        prediction.score !== 'undefined'
+      ) {
+        var mappingBus = this.state.table.mapAs({ x: 'x', value: 'bus' });
+        this.state.table.addData([
+          { x: dformat.toString(), bus: prediction.score },
+        ]);
+        series = this.state.chart.plot(5).line(mappingBus);
+        series.name('Bus');
         this.state.chart.draw();
       }
     });
