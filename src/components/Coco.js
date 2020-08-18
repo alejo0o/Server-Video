@@ -62,20 +62,43 @@ class Coco extends Component {
   detectFrame = (video, model) => {
     model.detect(video).then((predictions) => {
       this.renderPredictions(predictions);
+      setTimeout(this.graph(predictions), 5000);
       requestAnimationFrame(() => {
         this.detectFrame(video, model);
       });
     });
   };
 
-  renderPredictions = (predictions) => {
+  graph = (predictions) => {
     var d = new Date(),
       dformat =
         [d.getMonth() + 1, d.getDate(), d.getFullYear()].join('/') +
         ' ' +
         [d.getHours(), d.getMinutes(), d.getSeconds()].join(':');
-
-    // console.log(predictions);
+    predictions.forEach((prediction) => {
+      var mappingPerson = this.state.table.mapAs({ x: 'x', value: 'person' });
+      if (prediction.class === 'person' && prediction.score !== 'undefined') {
+        this.state.table.addData([
+          { x: dformat.toString(), person: prediction.score },
+        ]);
+        var series = this.state.chart.plot(0).line(mappingPerson);
+        series.name('Person');
+        this.state.chart.draw();
+      } else if (
+        prediction.class === 'bed' &&
+        prediction.score !== 'undefined'
+      ) {
+        var mappingBed = this.state.table.mapAs({ x: 'x', value: 'bed' });
+        this.state.table.addData([
+          { x: dformat.toString(), bed: prediction.score },
+        ]);
+        var series = this.state.chart.plot(1).line(mappingBed);
+        series.name('Bed');
+        this.state.chart.draw();
+      }
+    });
+  };
+  renderPredictions = (predictions) => {
     const ctx = this.canvasRef.current.getContext('2d');
     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
     // Font options.
@@ -83,16 +106,6 @@ class Coco extends Component {
     ctx.font = font;
     ctx.textBaseline = 'top';
     predictions.forEach((prediction) => {
-      if (prediction.class === 'bed' && prediction.score !== 'undefined') {
-        this.state.table.addData([
-          { x: dformat.toString(), value: prediction.score },
-        ]);
-        var mapping = this.state.table.mapAs({ x: 'x', value: 'value' });
-        var series = this.state.chart.plot(0).line(mapping);
-        series.name('Clases');
-        this.state.chart.draw();
-      }
-
       const x = prediction.bbox[0];
       const y = prediction.bbox[1];
       const width = prediction.bbox[2];
