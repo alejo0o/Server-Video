@@ -10,12 +10,18 @@ import AnyChart from 'anychart-react';
 import Nprogress from 'nprogress';
 import anychart from 'anychart';
 
-var msftDataTable = anychart.data.table();
-msftDataTable.addData(window.get_msft_daily_short_data());
-var chart = anychart.stock();
-var firstPlot = chart.plot(0);
-firstPlot.area(msftDataTable.mapAs({ value: 4 })).name('MSFT');
 class Coco extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      data: [],
+      msftDataTable: anychart.data.table(),
+      chart: anychart.stock(),
+    };
+    this.setState = {
+      firstPlot: this.state.chart.plot(0),
+    };
+  }
   videoRef = React.createRef();
   canvasRef = React.createRef();
 
@@ -59,11 +65,36 @@ class Coco extends Component {
   detectFrame = (video, model) => {
     model.detect(video).then((predictions) => {
       this.renderPredictions(predictions);
-      // this.detectFrameGrap(predictions);
+      // this.graph(predictions);
+      this.state.msftDataTable.addData(this.graph(predictions));
+      this.setState.firstPlot
+        .area(this.state.msftDataTable.mapAs({ value: 4 }))
+        .name('class');
       requestAnimationFrame(() => {
         this.detectFrame(video, model);
       });
     });
+  };
+  graph = (predictions) => {
+    var d = new Date(),
+      dformat =
+        [d.getMonth() + 1, d.getDate(), d.getFullYear()].join('/') +
+        ' ' +
+        [d.getHours(), d.getMinutes(), d.getSeconds()].join(':');
+    // this.state.date = new Array();
+    predictions.forEach((prediction) => {
+      var items = new Array();
+      // if (!items.includes(prediction.class))
+      items.push(d.toString(), prediction.class);
+      // this.state.data.push(items);
+      // console.log(items);
+
+      return items;
+    });
+    // console.log(this.state.data);
+    // this.detectFrameGrap(predictions);
+
+    // console.log(this.state.data);
   };
   // detectFrameGrap = (predictions) => {
   //   const pred = [];
@@ -75,7 +106,7 @@ class Coco extends Component {
   // };
 
   renderPredictions = (predictions) => {
-    console.log(predictions);
+    // console.log(predictions);
     const ctx = this.canvasRef.current.getContext('2d');
     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
     // Font options.
@@ -146,7 +177,7 @@ class Coco extends Component {
         <AnyChart
           width={800}
           height={600}
-          instance={chart}
+          instance={this.state.chart}
           title="Stock demo"
         />
       </CocoDiv>
