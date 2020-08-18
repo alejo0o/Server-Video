@@ -20,3 +20,6 @@ export const Canvas = styled.canvas`
   -moz-box-shadow: 15px 15px 3px 1px rgb(6, 7, 7);
   box-shadow: 15px 15px 3px 1px rgb(17, 17, 17);
 `;
+export const Graphic = styled.div`
+  padding: 2em 0em 2em 20%;
+`;

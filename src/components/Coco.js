@@ -3,7 +3,7 @@ import '../styles/spinner.css';
 
 import * as cocoSsd from '@tensorflow-models/coco-ssd';
 
-import { Canvas, CocoDiv, Main, Video } from '../styles/CocoContainer';
+import { Canvas, CocoDiv, Main, Video, Graphic } from '../styles/CocoContainer';
 import React, { Component } from 'react';
 
 import AnyChart from 'anychart-react';
@@ -131,48 +131,47 @@ class Coco extends Component {
   };
   render() {
     return (
-      <CocoDiv>
-        <div
-          id="lds-ring"
-          ref={this.loaderRed}
-          style={{ visibility: 'hidden' }}
-        >
-          <div></div>
-          <div></div>
-          <div></div>
-          <div></div>
-        </div>
-        <Main>
-          <Video
-            id="video"
-            autoPlay
-            playsInline
-            muted
-            ref={this.videoRef}
-            width="600"
-            height="500"
-            style={{ visibility: 'hidden' }}
+      <div>
+        <CocoDiv>
+          <div
+            id='lds-ring'
+            ref={this.loaderRed}
+            style={{ visibility: 'hidden' }}>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+          </div>
+          <Main>
+            <Video
+              id='video'
+              autoPlay
+              playsInline
+              muted
+              ref={this.videoRef}
+              width='600'
+              height='500'
+              style={{ visibility: 'hidden' }}
+            />
+            <Canvas
+              id='canvas'
+              ref={this.canvasRef}
+              width='600'
+              height='500'
+              style={{ visibility: 'hidden' }}
+            />
+          </Main>
+        </CocoDiv>
+        <hr />
+        <Graphic>
+          <AnyChart
+            width={800}
+            height={600}
+            instance={this.state.chart}
+            title='Stock demo'
           />
-          <Canvas
-            id="canvas"
-            ref={this.canvasRef}
-            width="600"
-            height="500"
-            style={{ visibility: 'hidden' }}
-          />
-        </Main>
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-        <AnyChart
-          width={800}
-          height={600}
-          instance={this.state.chart}
-          title="Stock demo"
-        />
-      </CocoDiv>
+        </Graphic>
+      </div>
     );
   }
 }
