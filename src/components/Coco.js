@@ -15,11 +15,8 @@ class Coco extends Component {
     super(props);
     this.state = {
       data: [],
-      msftDataTable: anychart.data.table(),
+      table: anychart.data.table('x'),
       chart: anychart.stock(),
-    };
-    this.setState = {
-      firstPlot: this.state.chart.plot(0),
     };
   }
   videoRef = React.createRef();
@@ -65,47 +62,19 @@ class Coco extends Component {
   detectFrame = (video, model) => {
     model.detect(video).then((predictions) => {
       this.renderPredictions(predictions);
-      // this.graph(predictions);
-      this.state.msftDataTable.addData(this.graph(predictions));
-      this.setState.firstPlot
-        .area(this.state.msftDataTable.mapAs({ value: 4 }))
-        .name('class');
       requestAnimationFrame(() => {
         this.detectFrame(video, model);
       });
     });
   };
-  graph = (predictions) => {
+
+  renderPredictions = (predictions) => {
     var d = new Date(),
       dformat =
         [d.getMonth() + 1, d.getDate(), d.getFullYear()].join('/') +
         ' ' +
         [d.getHours(), d.getMinutes(), d.getSeconds()].join(':');
-    // this.state.date = new Array();
-    predictions.forEach((prediction) => {
-      var items = new Array();
-      // if (!items.includes(prediction.class))
-      items.push(d.toString(), prediction.class);
-      // this.state.data.push(items);
-      // console.log(items);
 
-      return items;
-    });
-    // console.log(this.state.data);
-    // this.detectFrameGrap(predictions);
-
-    // console.log(this.state.data);
-  };
-  // detectFrameGrap = (predictions) => {
-  //   const pred = [];
-  //   predictions.forEach((prediction) => {
-  //     if (!pred.includes(predictions)) pred.push(prediction);
-  //   });
-  //   console.log('predicciones', { pred });
-  //   return pred;
-  // };
-
-  renderPredictions = (predictions) => {
     // console.log(predictions);
     const ctx = this.canvasRef.current.getContext('2d');
     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
@@ -114,6 +83,16 @@ class Coco extends Component {
     ctx.font = font;
     ctx.textBaseline = 'top';
     predictions.forEach((prediction) => {
+      if (prediction.class === 'bed' && prediction.score !== 'undefined') {
+        this.state.table.addData([
+          { x: dformat.toString(), value: prediction.score },
+        ]);
+        var mapping = this.state.table.mapAs({ x: 'x', value: 'value' });
+        var series = this.state.chart.plot(0).line(mapping);
+        series.name('Clases');
+        this.state.chart.draw();
+      }
+
       const x = prediction.bbox[0];
       const y = prediction.bbox[1];
       const width = prediction.bbox[2];
