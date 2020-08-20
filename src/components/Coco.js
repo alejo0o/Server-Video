@@ -21,6 +21,7 @@ import Nprogress from 'nprogress';
 import anychart from 'anychart';
 import { fas } from '@fortawesome/free-solid-svg-icons';
 import { library } from '@fortawesome/fontawesome-svg-core';
+import videoP from './test.mp4';
 
 library.add(fas);
 
@@ -44,39 +45,27 @@ class Coco extends Component {
   componentDidMount() {
     Nprogress.start();
     document.getElementById('lds-ring').style.visibility = 'visible';
-    if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-      const webCamPromise = navigator.mediaDevices
-        .getUserMedia({
-          audio: false,
-          video: {
-            facingMode: 'user',
-          },
-        })
-        .then((stream) => {
-          window.stream = stream;
-          this.videoRef.current.srcObject = stream;
-          return new Promise((resolve, reject) => {
-            this.videoRef.current.onloadedmetadata = () => {
-              resolve();
-            };
-          });
-        });
-      const modelPromise = cocoSsd.load();
-      Promise.all([modelPromise, webCamPromise])
-        .then((values) => {
-          document.getElementById('lds-ring').style.visibility = 'visible';
-          document.getElementById('canvas');
-          this.detectFrame(this.videoRef.current, values[0]);
-          this.toogleGraph(this.videoRef.current, values[0]);
-          document.getElementById('lds-ring').style.visibility = 'hidden';
-          document.getElementById('video').style.visibility = 'visible';
-          document.getElementById('canvas').style.visibility = 'visible';
-          Nprogress.done();
-        })
-        .catch((error) => {
-          console.error(error);
-        });
-    }
+    const webCamPromise = new Promise((resolve) => {
+      this.videoRef.current.onloadedmetadata = () => {
+        resolve();
+      };
+    });
+    const modelPromise = cocoSsd.load();
+    Promise.all([modelPromise, webCamPromise])
+      .then((values) => {
+        document.getElementById('lds-ring').style.visibility = 'visible';
+        document.getElementById('canvas');
+        this.detectFrame(this.videoRef.current, values[0]);
+        this.toogleGraph(this.videoRef.current, values[0]);
+        document.getElementById('lds-ring').style.visibility = 'hidden';
+        document.getElementById('video').style.visibility = 'visible';
+        document.getElementById('canvas').style.visibility = 'visible';
+        Nprogress.done();
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+    // }
   }
 
   toogleGraph = (video, model) => {
@@ -226,7 +215,10 @@ class Coco extends Component {
               width="600"
               height="500"
               style={{ visibility: 'hidden' }}
-            />
+              src={videoP}
+            >
+              <source src="./test.mp4" type="video/mp4" />
+            </Video>
             <Canvas
               id="canvas"
               ref={this.canvasRef}
