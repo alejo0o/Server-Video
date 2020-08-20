@@ -21,7 +21,7 @@ import Nprogress from 'nprogress';
 import anychart from 'anychart';
 import { fas } from '@fortawesome/free-solid-svg-icons';
 import { library } from '@fortawesome/fontawesome-svg-core';
-import videoP from './test.mp4';
+import videoP from '../utils/London.mp4';
 
 library.add(fas);
 
@@ -196,10 +196,9 @@ class Coco extends Component {
       <div>
         <CocoDiv>
           <div
-            id="lds-ring"
+            id='lds-ring'
             ref={this.loaderRed}
-            style={{ visibility: 'hidden' }}
-          >
+            style={{ visibility: 'hidden' }}>
             <div></div>
             <div></div>
             <div></div>
@@ -207,23 +206,22 @@ class Coco extends Component {
           </div>
           <Main>
             <Video
-              id="video"
+              id='video'
               autoPlay
               playsInline
               muted
               ref={this.videoRef}
-              width="600"
-              height="500"
+              width='600'
+              height='500'
               style={{ visibility: 'hidden' }}
-              src={videoP}
-            >
-              <source src="./test.mp4" type="video/mp4" />
+              src={videoP}>
+              <source src='./test.mp4' type='video/mp4' />
             </Video>
             <Canvas
-              id="canvas"
+              id='canvas'
               ref={this.canvasRef}
-              width="600"
-              height="500"
+              width='600'
+              height='500'
               style={{ visibility: 'hidden' }}
             />
           </Main>
@@ -235,21 +233,19 @@ class Coco extends Component {
               width={800}
               height={600}
               instance={this.state.chart}
-              title="Coco SSD"
+              title='Coco SSD'
             />
           </Graphic>
           <Play
             onClick={() => {
               this.state.verificacion = true;
-            }}
-          >
+            }}>
             <FontAwesomeIcon icon={['fas', 'play-circle']} />
           </Play>
           <Stop
             onClick={() => {
               this.state.verificacion = false;
-            }}
-          >
+            }}>
             <FontAwesomeIcon icon={['fas', 'stop-circle']} />
           </Stop>
         </MainGraphic>
