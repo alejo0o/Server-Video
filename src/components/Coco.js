@@ -3,19 +3,25 @@ import '../styles/spinner.css';
 
 import * as cocoSsd from '@tensorflow-models/coco-ssd';
 
-import { Canvas, CocoDiv, Main, Video, Graphic } from '../styles/CocoContainer';
+import { Canvas, CocoDiv, Graphic, Main, Video } from '../styles/CocoContainer';
 import React, { Component } from 'react';
 
 import AnyChart from 'anychart-react';
 import Nprogress from 'nprogress';
 import anychart from 'anychart';
 
+let stage = anychart.graphics.create();
+
 class Coco extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      data: [],
-      table: anychart.data.table('x'),
+      tablePerson: anychart.data.table('x'),
+      tableBicycle: anychart.data.table('x'),
+      tableMotorcycle: anychart.data.table('x'),
+      tableAirplane: anychart.data.table('x'),
+      tableBus: anychart.data.table('x'),
+      tableCar: anychart.data.table('x'),
       chart: anychart.stock(),
     };
   }
@@ -70,85 +76,70 @@ class Coco extends Component {
   };
 
   graph = (predictions) => {
+    // console.log(predictions);
+
     var d = new Date(),
       dformat =
         [d.getMonth() + 1, d.getDate(), d.getFullYear()].join('/') +
         ' ' +
         [d.getHours(), d.getMinutes(), d.getSeconds()].join(':');
     predictions.forEach((prediction) => {
-      var series;
-      var mappingPerson = this.state.table.mapAs({ x: 'x', value: 'person' });
-      if (prediction.class === 'person' && prediction.score !== 'undefined') {
-        this.state.table.addData([
+      var mappingPerson = this.state.tablePerson.mapAs({
+        x: 'x',
+        value: 'person',
+      });
+      var mappingBicycle = this.state.tableBicycle.mapAs({
+        x: 'x',
+        value: 'bicycle',
+      });
+      var mappingCar = this.state.tableCar.mapAs({ x: 'x', value: 'car' });
+      var mappingMotorcycle = this.state.tableMotorcycle.mapAs({
+        x: 'x',
+        value: 'motorcycle',
+      });
+      var mappingAirplane = this.state.tableAirplane.mapAs({
+        x: 'x',
+        value: 'airplane',
+      });
+      var mappingBus = this.state.tableBus.mapAs({ x: 'x', value: 'bus' });
+      if (prediction.class === 'person') {
+        this.state.tablePerson.addData([
           { x: dformat.toString(), person: prediction.score },
         ]);
-        series = this.state.chart.plot(0).line(mappingPerson);
-        series.name('Person');
-        this.state.chart.draw();
-      } else if (
-        prediction.class === 'bicycle' &&
-        prediction.score !== 'undefined'
-      ) {
-        var mappingBicycle = this.state.table.mapAs({
-          x: 'x',
-          value: 'bicycle',
-        });
-        this.state.table.addData([
+        var seriesPerson = this.state.chart.plot(0).stepLine(mappingPerson);
+        seriesPerson.name('Person');
+        seriesPerson.stroke('#ff0000');
+      } else if (prediction.class === 'bicycle') {
+        this.state.tableBicycle.addData([
           { x: dformat.toString(), bicycle: prediction.score },
         ]);
-        series = this.state.chart.plot(1).line(mappingBicycle);
-        series.name('Bicycle');
-        this.state.chart.draw();
-      } else if (
-        prediction.class === 'car' &&
-        prediction.score !== 'undefined'
-      ) {
-        var mappingCar = this.state.table.mapAs({ x: 'x', value: 'car' });
-        this.state.table.addData([
+        var seriesBicycle = this.state.chart.plot(1).stepLine(mappingBicycle);
+        seriesBicycle.name('Bicycle');
+        seriesBicycle.stroke('#ff0daa');
+      } else if (prediction.class === 'car') {
+        this.state.tableCar.addData([
           { x: dformat.toString(), car: prediction.score },
         ]);
-        series = this.state.chart.plot(2).line(mappingCar);
+        var series = this.state.chart.plot(2).stepLine(mappingCar);
         series.name('Car');
-        this.state.chart.draw();
-      } else if (
-        prediction.class === 'motorcycle' &&
-        prediction.score !== 'undefined'
-      ) {
-        var mappingMotorcycle = this.state.table.mapAs({
-          x: 'x',
-          value: 'motorcycle',
-        });
-        this.state.table.addData([
+      } else if (prediction.class === 'motorcycle') {
+        this.state.tableMotorcycle.addData([
           { x: dformat.toString(), motorcycle: prediction.score },
         ]);
-        series = this.state.chart.plot(3).line(mappingMotorcycle);
+        var series = this.state.chart.plot(3).stepLine(mappingMotorcycle);
         series.name('Motorcycle');
-        this.state.chart.draw();
-      } else if (
-        prediction.class === 'airplane' &&
-        prediction.score !== 'undefined'
-      ) {
-        var mappingAirplane = this.state.table.mapAs({
-          x: 'x',
-          value: 'airplane',
-        });
-        this.state.table.addData([
+      } else if (prediction.class === 'airplane') {
+        this.state.tableAirplane.addData([
           { x: dformat.toString(), airplane: prediction.score },
         ]);
-        series = this.state.chart.plot(4).line(mappingAirplane);
+        var series = this.state.chart.plot(4).stepLine(mappingAirplane);
         series.name('Airplane');
-        this.state.chart.draw();
-      } else if (
-        prediction.class === 'bus' &&
-        prediction.score !== 'undefined'
-      ) {
-        var mappingBus = this.state.table.mapAs({ x: 'x', value: 'bus' });
-        this.state.table.addData([
+      } else if (prediction.class === 'bus') {
+        this.state.tableBus.addData([
           { x: dformat.toString(), bus: prediction.score },
         ]);
-        series = this.state.chart.plot(5).line(mappingBus);
+        var series = this.state.chart.plot(5).stepLine(mappingBus);
         series.name('Bus');
-        this.state.chart.draw();
       }
     });
   };
@@ -188,9 +179,10 @@ class Coco extends Component {
       <div>
         <CocoDiv>
           <div
-            id='lds-ring'
+            id="lds-ring"
             ref={this.loaderRed}
-            style={{ visibility: 'hidden' }}>
+            style={{ visibility: 'hidden' }}
+          >
             <div></div>
             <div></div>
             <div></div>
@@ -198,20 +190,20 @@ class Coco extends Component {
           </div>
           <Main>
             <Video
-              id='video'
+              id="video"
               autoPlay
               playsInline
               muted
               ref={this.videoRef}
-              width='600'
-              height='500'
+              width="600"
+              height="500"
               style={{ visibility: 'hidden' }}
             />
             <Canvas
-              id='canvas'
+              id="canvas"
               ref={this.canvasRef}
-              width='600'
-              height='500'
+              width="600"
+              height="500"
               style={{ visibility: 'hidden' }}
             />
           </Main>
@@ -222,7 +214,7 @@ class Coco extends Component {
             width={800}
             height={600}
             instance={this.state.chart}
-            title='Stock demo'
+            title="Stock demo"
           />
         </Graphic>
       </div>
