@@ -3,14 +3,26 @@ import '../styles/spinner.css';
 
 import * as cocoSsd from '@tensorflow-models/coco-ssd';
 
-import { Canvas, CocoDiv, Graphic, Main, Video } from '../styles/CocoContainer';
+import {
+  Canvas,
+  CocoDiv,
+  Graphic,
+  Main,
+  MainGraphic,
+  Play,
+  Stop,
+  Video,
+} from '../styles/CocoContainer';
 import React, { Component } from 'react';
 
 import AnyChart from 'anychart-react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Nprogress from 'nprogress';
 import anychart from 'anychart';
+import { fas } from '@fortawesome/free-solid-svg-icons';
+import { library } from '@fortawesome/fontawesome-svg-core';
 
-let stage = anychart.graphics.create();
+library.add(fas);
 
 class Coco extends Component {
   constructor(props) {
@@ -23,6 +35,7 @@ class Coco extends Component {
       tableBus: anychart.data.table('x'),
       tableCar: anychart.data.table('x'),
       chart: anychart.stock(),
+      verificacion: true,
     };
   }
   videoRef = React.createRef();
@@ -54,6 +67,7 @@ class Coco extends Component {
           document.getElementById('lds-ring').style.visibility = 'visible';
           document.getElementById('canvas');
           this.detectFrame(this.videoRef.current, values[0]);
+          this.toogleGraph(this.videoRef.current, values[0]);
           document.getElementById('lds-ring').style.visibility = 'hidden';
           document.getElementById('video').style.visibility = 'visible';
           document.getElementById('canvas').style.visibility = 'visible';
@@ -65,10 +79,21 @@ class Coco extends Component {
     }
   }
 
+  toogleGraph = (video, model) => {
+    model.detect(video).then((predictions) => {
+      requestAnimationFrame(() => {
+        if (this.state.verificacion) {
+          setTimeout(this.graph(predictions), 5000);
+        }
+        this.toogleGraph(video, model);
+      });
+    });
+  };
+
   detectFrame = (video, model) => {
     model.detect(video).then((predictions) => {
       this.renderPredictions(predictions);
-      setTimeout(this.graph(predictions), 5000);
+      //setTimeout(this.graph(predictions), 5000);
       requestAnimationFrame(() => {
         this.detectFrame(video, model);
       });
@@ -76,8 +101,7 @@ class Coco extends Component {
   };
 
   graph = (predictions) => {
-    // console.log(predictions);
-
+    var series;
     var d = new Date(),
       dformat =
         [d.getMonth() + 1, d.getDate(), d.getFullYear()].join('/') +
@@ -106,40 +130,44 @@ class Coco extends Component {
         this.state.tablePerson.addData([
           { x: dformat.toString(), person: prediction.score },
         ]);
-        var seriesPerson = this.state.chart.plot(0).stepLine(mappingPerson);
-        seriesPerson.name('Person');
-        seriesPerson.stroke('#ff0000');
+        series = this.state.chart.plot(0).stepLine(mappingPerson);
+        series.name('Person');
+        series.stroke('#44b4c4');
       } else if (prediction.class === 'bicycle') {
         this.state.tableBicycle.addData([
           { x: dformat.toString(), bicycle: prediction.score },
         ]);
-        var seriesBicycle = this.state.chart.plot(1).stepLine(mappingBicycle);
-        seriesBicycle.name('Bicycle');
-        seriesBicycle.stroke('#ff0daa');
+        series = this.state.chart.plot(1).stepLine(mappingBicycle);
+        series.name('Bicycle');
+        series.stroke('#5ebdb2');
       } else if (prediction.class === 'car') {
         this.state.tableCar.addData([
           { x: dformat.toString(), car: prediction.score },
         ]);
-        var series = this.state.chart.plot(2).stepLine(mappingCar);
+        series = this.state.chart.plot(2).stepLine(mappingCar);
         series.name('Car');
+        series.stroke('#f0ddaa');
       } else if (prediction.class === 'motorcycle') {
         this.state.tableMotorcycle.addData([
           { x: dformat.toString(), motorcycle: prediction.score },
         ]);
-        var series = this.state.chart.plot(3).stepLine(mappingMotorcycle);
+        series = this.state.chart.plot(3).stepLine(mappingMotorcycle);
         series.name('Motorcycle');
+        series.stroke('#e47c5d');
       } else if (prediction.class === 'airplane') {
         this.state.tableAirplane.addData([
           { x: dformat.toString(), airplane: prediction.score },
         ]);
-        var series = this.state.chart.plot(4).stepLine(mappingAirplane);
+        series = this.state.chart.plot(4).stepLine(mappingAirplane);
         series.name('Airplane');
+        series.stroke('#e42d40');
       } else if (prediction.class === 'bus') {
         this.state.tableBus.addData([
           { x: dformat.toString(), bus: prediction.score },
         ]);
-        var series = this.state.chart.plot(5).stepLine(mappingBus);
+        series = this.state.chart.plot(5).stepLine(mappingBus);
         series.name('Bus');
+        series.stroke('#142b3b');
       }
     });
   };
@@ -209,14 +237,30 @@ class Coco extends Component {
           </Main>
         </CocoDiv>
         <hr />
-        <Graphic>
-          <AnyChart
-            width={800}
-            height={600}
-            instance={this.state.chart}
-            title="Stock demo"
-          />
-        </Graphic>
+        <MainGraphic>
+          <Graphic>
+            <AnyChart
+              width={800}
+              height={600}
+              instance={this.state.chart}
+              title="Coco SSD"
+            />
+          </Graphic>
+          <Play
+            onClick={() => {
+              this.state.verificacion = true;
+            }}
+          >
+            <FontAwesomeIcon icon={['fas', 'play-circle']} />
+          </Play>
+          <Stop
+            onClick={() => {
+              this.state.verificacion = false;
+            }}
+          >
+            <FontAwesomeIcon icon={['fas', 'stop-circle']} />
+          </Stop>
+        </MainGraphic>
       </div>
     );
   }
