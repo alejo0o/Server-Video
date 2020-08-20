@@ -3,12 +3,25 @@ import '../styles/spinner.css';
 
 import * as cocoSsd from '@tensorflow-models/coco-ssd';
 
-import { Canvas, CocoDiv, Main, Video, Graphic } from '../styles/CocoContainer';
+import {
+  Canvas,
+  CocoDiv,
+  Main,
+  Video,
+  Graphic,
+  MainGraphic,
+  Play,
+  Stop,
+} from '../styles/CocoContainer';
 import React, { Component } from 'react';
-
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { fas } from '@fortawesome/free-solid-svg-icons';
+import { library } from '@fortawesome/fontawesome-svg-core';
 import AnyChart from 'anychart-react';
 import Nprogress from 'nprogress';
 import anychart from 'anychart';
+
+library.add(fas);
 
 class Coco extends Component {
   constructor(props) {
@@ -16,7 +29,13 @@ class Coco extends Component {
     this.state = {
       data: [],
       table: anychart.data.table('x'),
+      table1: anychart.data.table('x'),
+      table2: anychart.data.table('x'),
+      table3: anychart.data.table('x'),
+      table4: anychart.data.table('x'),
+      table5: anychart.data.table('x'),
       chart: anychart.stock(),
+      verificacion: true,
     };
   }
   videoRef = React.createRef();
@@ -48,6 +67,7 @@ class Coco extends Component {
           document.getElementById('lds-ring').style.visibility = 'visible';
           document.getElementById('canvas');
           this.detectFrame(this.videoRef.current, values[0]);
+          this.toogleGraph(this.videoRef.current, values[0]);
           document.getElementById('lds-ring').style.visibility = 'hidden';
           document.getElementById('video').style.visibility = 'visible';
           document.getElementById('canvas').style.visibility = 'visible';
@@ -59,10 +79,21 @@ class Coco extends Component {
     }
   }
 
+  toogleGraph = (video, model) => {
+    model.detect(video).then((predictions) => {
+      requestAnimationFrame(() => {
+        if (this.state.verificacion) {
+          setTimeout(this.graph(predictions), 5000);
+        }
+        this.toogleGraph(video, model);
+      });
+    });
+  };
+
   detectFrame = (video, model) => {
     model.detect(video).then((predictions) => {
       this.renderPredictions(predictions);
-      setTimeout(this.graph(predictions), 5000);
+      //setTimeout(this.graph(predictions), 5000);
       requestAnimationFrame(() => {
         this.detectFrame(video, model);
       });
@@ -85,65 +116,58 @@ class Coco extends Component {
         series = this.state.chart.plot(0).line(mappingPerson);
         series.name('Person');
         this.state.chart.draw();
-      } else if (
-        prediction.class === 'bicycle' &&
-        prediction.score !== 'undefined'
-      ) {
-        var mappingBicycle = this.state.table.mapAs({
+      }
+      if (prediction.class === 'keyboard' && prediction.score !== 'undefined') {
+        var mappingBicycle = this.state.table1.mapAs({
           x: 'x',
-          value: 'bicycle',
+          value: 'keyboard',
         });
-        this.state.table.addData([
-          { x: dformat.toString(), bicycle: prediction.score },
+        this.state.table1.addData([
+          { x: dformat.toString(), keyboard: prediction.score },
         ]);
         series = this.state.chart.plot(1).line(mappingBicycle);
-        series.name('Bicycle');
+        series.name('Keyboard');
         this.state.chart.draw();
-      } else if (
-        prediction.class === 'car' &&
-        prediction.score !== 'undefined'
-      ) {
-        var mappingCar = this.state.table.mapAs({ x: 'x', value: 'car' });
-        this.state.table.addData([
-          { x: dformat.toString(), car: prediction.score },
+      }
+      if (prediction.class === 'bottle' && prediction.score !== 'undefined') {
+        var mappingCar = this.state.table2.mapAs({ x: 'x', value: 'bottle' });
+        this.state.table2.addData([
+          { x: dformat.toString(), bottle: prediction.score },
         ]);
         series = this.state.chart.plot(2).line(mappingCar);
-        series.name('Car');
+        series.name('Bottle');
         this.state.chart.draw();
-      } else if (
+      }
+      if (
         prediction.class === 'motorcycle' &&
         prediction.score !== 'undefined'
       ) {
-        var mappingMotorcycle = this.state.table.mapAs({
+        var mappingMotorcycle = this.state.table3.mapAs({
           x: 'x',
           value: 'motorcycle',
         });
-        this.state.table.addData([
+        this.state.table3.addData([
           { x: dformat.toString(), motorcycle: prediction.score },
         ]);
         series = this.state.chart.plot(3).line(mappingMotorcycle);
         series.name('Motorcycle');
         this.state.chart.draw();
-      } else if (
-        prediction.class === 'airplane' &&
-        prediction.score !== 'undefined'
-      ) {
-        var mappingAirplane = this.state.table.mapAs({
+      }
+      if (prediction.class === 'airplane' && prediction.score !== 'undefined') {
+        var mappingAirplane = this.state.table4.mapAs({
           x: 'x',
           value: 'airplane',
         });
-        this.state.table.addData([
+        this.state.table4.addData([
           { x: dformat.toString(), airplane: prediction.score },
         ]);
         series = this.state.chart.plot(4).line(mappingAirplane);
         series.name('Airplane');
         this.state.chart.draw();
-      } else if (
-        prediction.class === 'bus' &&
-        prediction.score !== 'undefined'
-      ) {
-        var mappingBus = this.state.table.mapAs({ x: 'x', value: 'bus' });
-        this.state.table.addData([
+      }
+      if (prediction.class === 'bus' && prediction.score !== 'undefined') {
+        var mappingBus = this.state.table5.mapAs({ x: 'x', value: 'bus' });
+        this.state.table5.addData([
           { x: dformat.toString(), bus: prediction.score },
         ]);
         series = this.state.chart.plot(5).line(mappingBus);
@@ -217,14 +241,28 @@ class Coco extends Component {
           </Main>
         </CocoDiv>
         <hr />
-        <Graphic>
-          <AnyChart
-            width={800}
-            height={600}
-            instance={this.state.chart}
-            title='Stock demo'
-          />
-        </Graphic>
+        <MainGraphic>
+          <Graphic>
+            <AnyChart
+              width={800}
+              height={600}
+              instance={this.state.chart}
+              title='Stock demo'
+            />
+          </Graphic>
+          <Play
+            onClick={() => {
+              this.state.verificacion = true;
+            }}>
+            <FontAwesomeIcon icon={['fas', 'play-circle']} />
+          </Play>
+          <Stop
+            onClick={() => {
+              this.state.verificacion = false;
+            }}>
+            <FontAwesomeIcon icon={['fas', 'stop-circle']} />
+          </Stop>
+        </MainGraphic>
       </div>
     );
   }
