@@ -6,20 +6,21 @@ import * as cocoSsd from '@tensorflow-models/coco-ssd';
 import {
   Canvas,
   CocoDiv,
-  Main,
-  Video,
   Graphic,
+  Main,
   MainGraphic,
   Play,
   Stop,
+  Video,
 } from '../styles/CocoContainer';
 import React, { Component } from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { fas } from '@fortawesome/free-solid-svg-icons';
-import { library } from '@fortawesome/fontawesome-svg-core';
+
 import AnyChart from 'anychart-react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Nprogress from 'nprogress';
 import anychart from 'anychart';
+import { fas } from '@fortawesome/free-solid-svg-icons';
+import { library } from '@fortawesome/fontawesome-svg-core';
 
 library.add(fas);
 
@@ -27,13 +28,12 @@ class Coco extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      data: [],
-      table: anychart.data.table('x'),
-      table1: anychart.data.table('x'),
-      table2: anychart.data.table('x'),
-      table3: anychart.data.table('x'),
-      table4: anychart.data.table('x'),
-      table5: anychart.data.table('x'),
+      tablePerson: anychart.data.table('x'),
+      tableBicycle: anychart.data.table('x'),
+      tableMotorcycle: anychart.data.table('x'),
+      tableAirplane: anychart.data.table('x'),
+      tableBus: anychart.data.table('x'),
+      tableCar: anychart.data.table('x'),
       chart: anychart.stock(),
       verificacion: true,
     };
@@ -101,78 +101,73 @@ class Coco extends Component {
   };
 
   graph = (predictions) => {
+    var series;
     var d = new Date(),
       dformat =
         [d.getMonth() + 1, d.getDate(), d.getFullYear()].join('/') +
         ' ' +
         [d.getHours(), d.getMinutes(), d.getSeconds()].join(':');
     predictions.forEach((prediction) => {
-      var series;
-      var mappingPerson = this.state.table.mapAs({ x: 'x', value: 'person' });
-      if (prediction.class === 'person' && prediction.score !== 'undefined') {
-        this.state.table.addData([
+      var mappingPerson = this.state.tablePerson.mapAs({
+        x: 'x',
+        value: 'person',
+      });
+      var mappingBicycle = this.state.tableBicycle.mapAs({
+        x: 'x',
+        value: 'bicycle',
+      });
+      var mappingCar = this.state.tableCar.mapAs({ x: 'x', value: 'car' });
+      var mappingMotorcycle = this.state.tableMotorcycle.mapAs({
+        x: 'x',
+        value: 'motorcycle',
+      });
+      var mappingAirplane = this.state.tableAirplane.mapAs({
+        x: 'x',
+        value: 'airplane',
+      });
+      var mappingBus = this.state.tableBus.mapAs({ x: 'x', value: 'bus' });
+      if (prediction.class === 'person') {
+        this.state.tablePerson.addData([
           { x: dformat.toString(), person: prediction.score },
         ]);
-        series = this.state.chart.plot(0).line(mappingPerson);
+        series = this.state.chart.plot(0).stepLine(mappingPerson);
         series.name('Person');
-        this.state.chart.draw();
-      }
-      if (prediction.class === 'keyboard' && prediction.score !== 'undefined') {
-        var mappingBicycle = this.state.table1.mapAs({
-          x: 'x',
-          value: 'keyboard',
-        });
-        this.state.table1.addData([
-          { x: dformat.toString(), keyboard: prediction.score },
+        series.stroke('#44b4c4');
+      } else if (prediction.class === 'bicycle') {
+        this.state.tableBicycle.addData([
+          { x: dformat.toString(), bicycle: prediction.score },
         ]);
-        series = this.state.chart.plot(1).line(mappingBicycle);
-        series.name('Keyboard');
-        this.state.chart.draw();
-      }
-      if (prediction.class === 'bottle' && prediction.score !== 'undefined') {
-        var mappingCar = this.state.table2.mapAs({ x: 'x', value: 'bottle' });
-        this.state.table2.addData([
-          { x: dformat.toString(), bottle: prediction.score },
+        series = this.state.chart.plot(1).stepLine(mappingBicycle);
+        series.name('Bicycle');
+        series.stroke('#5ebdb2');
+      } else if (prediction.class === 'car') {
+        this.state.tableCar.addData([
+          { x: dformat.toString(), car: prediction.score },
         ]);
-        series = this.state.chart.plot(2).line(mappingCar);
-        series.name('Bottle');
-        this.state.chart.draw();
-      }
-      if (
-        prediction.class === 'motorcycle' &&
-        prediction.score !== 'undefined'
-      ) {
-        var mappingMotorcycle = this.state.table3.mapAs({
-          x: 'x',
-          value: 'motorcycle',
-        });
-        this.state.table3.addData([
+        series = this.state.chart.plot(2).stepLine(mappingCar);
+        series.name('Car');
+        series.stroke('#f0ddaa');
+      } else if (prediction.class === 'motorcycle') {
+        this.state.tableMotorcycle.addData([
           { x: dformat.toString(), motorcycle: prediction.score },
         ]);
-        series = this.state.chart.plot(3).line(mappingMotorcycle);
+        series = this.state.chart.plot(3).stepLine(mappingMotorcycle);
         series.name('Motorcycle');
-        this.state.chart.draw();
-      }
-      if (prediction.class === 'airplane' && prediction.score !== 'undefined') {
-        var mappingAirplane = this.state.table4.mapAs({
-          x: 'x',
-          value: 'airplane',
-        });
-        this.state.table4.addData([
+        series.stroke('#e47c5d');
+      } else if (prediction.class === 'airplane') {
+        this.state.tableAirplane.addData([
           { x: dformat.toString(), airplane: prediction.score },
         ]);
-        series = this.state.chart.plot(4).line(mappingAirplane);
+        series = this.state.chart.plot(4).stepLine(mappingAirplane);
         series.name('Airplane');
-        this.state.chart.draw();
-      }
-      if (prediction.class === 'bus' && prediction.score !== 'undefined') {
-        var mappingBus = this.state.table5.mapAs({ x: 'x', value: 'bus' });
-        this.state.table5.addData([
+        series.stroke('#e42d40');
+      } else if (prediction.class === 'bus') {
+        this.state.tableBus.addData([
           { x: dformat.toString(), bus: prediction.score },
         ]);
-        series = this.state.chart.plot(5).line(mappingBus);
+        series = this.state.chart.plot(5).stepLine(mappingBus);
         series.name('Bus');
-        this.state.chart.draw();
+        series.stroke('#142b3b');
       }
     });
   };
@@ -212,9 +207,10 @@ class Coco extends Component {
       <div>
         <CocoDiv>
           <div
-            id='lds-ring'
+            id="lds-ring"
             ref={this.loaderRed}
-            style={{ visibility: 'hidden' }}>
+            style={{ visibility: 'hidden' }}
+          >
             <div></div>
             <div></div>
             <div></div>
@@ -222,20 +218,20 @@ class Coco extends Component {
           </div>
           <Main>
             <Video
-              id='video'
+              id="video"
               autoPlay
               playsInline
               muted
               ref={this.videoRef}
-              width='600'
-              height='500'
+              width="600"
+              height="500"
               style={{ visibility: 'hidden' }}
             />
             <Canvas
-              id='canvas'
+              id="canvas"
               ref={this.canvasRef}
-              width='600'
-              height='500'
+              width="600"
+              height="500"
               style={{ visibility: 'hidden' }}
             />
           </Main>
@@ -247,19 +243,21 @@ class Coco extends Component {
               width={800}
               height={600}
               instance={this.state.chart}
-              title='Stock demo'
+              title="Coco SSD"
             />
           </Graphic>
           <Play
             onClick={() => {
               this.state.verificacion = true;
-            }}>
+            }}
+          >
             <FontAwesomeIcon icon={['fas', 'play-circle']} />
           </Play>
           <Stop
             onClick={() => {
               this.state.verificacion = false;
-            }}>
+            }}
+          >
             <FontAwesomeIcon icon={['fas', 'stop-circle']} />
           </Stop>
         </MainGraphic>
