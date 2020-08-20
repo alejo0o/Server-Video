@@ -42,7 +42,18 @@ class Coco extends Component {
   videoRef = React.createRef();
   canvasRef = React.createRef();
 
+  buildFileSelector() {
+    const fileSelector = document.createElement('input');
+    fileSelector.setAttribute('type', 'file');
+    fileSelector.setAttribute('multiple', 'multiple');
+    return fileSelector;
+  }
+  handleFileSelect = (e) => {
+    e.preventDefault();
+    this.fileSelector.click();
+  };
   componentDidMount() {
+    this.fileSelector = this.buildFileSelector();
     Nprogress.start();
     document.getElementById('lds-ring').style.visibility = 'visible';
     const webCamPromise = new Promise((resolve) => {
@@ -65,7 +76,6 @@ class Coco extends Component {
       .catch((error) => {
         console.error(error);
       });
-    // }
   }
 
   toogleGraph = (video, model) => {
@@ -206,6 +216,9 @@ class Coco extends Component {
             <div></div>
           </div>
           <Main>
+            <a className="button" href="" onClick={this.handleFileSelect}>
+              Select files
+            </a>
             <Video
               id="video"
               autoPlay
@@ -216,9 +229,7 @@ class Coco extends Component {
               height="500"
               style={{ visibility: 'hidden' }}
               src={videoP}
-            >
-              <source src="./test.mp4" type="video/mp4" />
-            </Video>
+            />
             <Canvas
               id="canvas"
               ref={this.canvasRef}
