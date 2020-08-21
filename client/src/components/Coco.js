@@ -194,6 +194,7 @@ class Coco extends Component {
   render() {
     return (
       <div>
+        <FileUpload />
         <CocoDiv>
           <div
             id="lds-ring"
@@ -205,8 +206,6 @@ class Coco extends Component {
             <div></div>
             <div></div>
           </div>
-          <FileUpload />
-
           <Main>
             <Video
               id="video"
